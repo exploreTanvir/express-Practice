@@ -1,3 +1,6 @@
+//source link=https://www.youtube.com/watch?v=rQYZ3JmZsdI&list=PLgH5QX0i9K3p4ckbNCy71LRr_dG0AWGw9
+
+
 const express=require("express")
 const app=new express()
 const mongoose=require("mongoose")
@@ -59,7 +62,8 @@ const productSchema= new mongoose.Schema({
 const MyModel=mongoose.model("Teachers",productSchema)
 
 
-// Save data in Database
+// Insert data in Database
+// Post:/products =>> Create a  porducts
 
 app.post("/products",async(req,res)=>{
 
@@ -73,12 +77,63 @@ app.post("/products",async(req,res)=>{
 
    const productData=await newDBModel.save()
    req.status(201).send(productData)
+  }
+   catch (error) {
+    res.status(500).send({message:error.message})
+  }
+})
+
+
+
+// Get:/products =>> Find all the porducts
+
+app.get("/products",async(req,res)=>{
+  try {
+   const findAllData=await MyModel.find().limit(2) // limit method for how many item i want to find //limit is optional
+   // Find method throw us a array
+   if(findAllData){
+    res.status(200).send(findAllData)
+   }
+   else{
+  res.status(404).send({message:"Data not found"})
+   }
   } catch (error) {
     res.status(500).send({message:error.message})
   }
 })
 
-var port=3017
+// Get:/products:ID =>> Find a specific porducts
+
+app.get("/products/:id",async(req,res)=>{
+  try {
+    const id=req.params.id
+   const findOneData=await MyModel.findOne({price:id},).select({price:1,title:1,_id:0}) //FindOne method throw us a object
+   // select method for find specific product from a object
+   if(findOneData){
+    res.status(200).send({
+      success:true,
+      message:"Find one data successfull",
+      data:findOneData
+    })
+   }
+   else{
+  res.status(404).send({
+    message:"Data not found"
+   })
+   }
+  } catch (error) {
+    res.status(500).send({message:error.message})
+  }
+})
+
+
+// put:/products:ID =>> Update a porducts
+// put:/products:ID =>> Delete a porducts
+
+
+
+
+var port=3025
 app.listen(port,async()=>{
     console.log("Server run success on port number "+ port);
     // for Technic two
