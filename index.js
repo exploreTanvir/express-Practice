@@ -54,6 +54,10 @@ const productSchema= new mongoose.Schema({
   date:{
     type:Date,
     default:Date.now
+  },
+  rating:{
+    type:Number,
+    required:true
   }
 })
 
@@ -72,7 +76,8 @@ app.post("/products",async(req,res)=>{
      //get data from req body
     title:req.body.title,
     price:req.body.price,
-    description:req.body.description
+    description:req.body.description,
+    rating:req.body.rating
    })
 
    const productData=await newDBModel.save()
@@ -89,22 +94,8 @@ app.post("/products",async(req,res)=>{
 
 // Query and Projection Operators  Comparison
 //  For comparison of different BSON type values, see the specified BSON comparison order.
-	
-// $eq------Matches values that are equal to a specified value.
-	
-// $gt------Matches values that are greater than a specified value.
 
-// $gte-----Matches values that are greater than or equal to a specified value.
-	
-// $in------Matches any of the values specified in an array.
-
-// $lt------Matches values that are less than a specified value.
-	
-// $lte-----Matches values that are less than or equal to a specified value.
-	
-// $ne ------Matches all values that are not equal to a specified value.
-	
-//  $nin ------Matches none of the values specified in an array.
+//query mathod --https://www.mongodb.com/docs/manual/reference/operator/query/
 
 
 
@@ -113,8 +104,15 @@ app.post("/products",async(req,res)=>{
 
 app.get("/products",async(req,res)=>{
   try {
-   const findAllData=await MyModel.find({price:{$gt:2000}}).limit(5) // limit method for how many item i want to find //limit is optional
+   const findAllData=await MyModel.find({$or:[{price:{$gt:5000}},{rating:{$lt:4}}]}).limit(5)
+   
+   //query mathod --https://www.mongodb.com/docs/manual/reference/operator/query/
+   // limit method for how many item i want to find 
+   //limit is optional
    // Find method throw us a array
+   //Query and Projection Operators  Comparison and logical 
+
+
    if(findAllData){
     res.status(200).send(findAllData)
    }
@@ -154,9 +152,7 @@ app.get("/products/:id",async(req,res)=>{
 // put:/products:ID =>> Delete a porducts
 
 
-
-
-var port=3033
+var port=3037
 app.listen(port,async()=>{
     console.log("Server run success on port number "+ port);
     // for Technic two
