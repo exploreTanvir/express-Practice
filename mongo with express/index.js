@@ -188,10 +188,50 @@ app.get("/products/:id",async(req,res)=>{
 })
 
 // put:/products:ID =>> Update a porducts
+
+app.put("/UpdateItem",async(req,res)=>{
+  try {
+    const id=req.params.id
+    const UpdateData=await MyModel.updateOne(
+      {
+        rating:id
+      },
+     {$set: {
+        price:req.body.price,
+        rating:req.body.price
+        
+      }
+  }
+    )
+      if(UpdateData){
+       res.status(201).send(
+        {
+          success:true,
+          message:"Update Data Successful",
+          data:UpdateData
+        }
+       )
+      }
+      else{
+       res.status(404).send(
+        {
+          message:"Find data failed"
+        }
+       )
+      }
+
+  } catch (error) {
+    res.status(404).send({
+      message:"Bal hosse na kn"
+    })
+  }
+})
+
+
 // put:/products:ID =>> Delete a porducts
 
 
-var port=3046
+var port=3055
 app.listen(port,async()=>{
     console.log("Server run success on port number "+ port);
     // for Technic two
