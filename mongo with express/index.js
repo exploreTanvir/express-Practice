@@ -54,6 +54,10 @@ const productSchema= new mongoose.Schema({
   date:{
     type:Date,
     default:Date.now
+  },
+  rating:{
+    type:Number,
+    required:true
   }
 })
 
@@ -68,20 +72,38 @@ const MyModel=mongoose.model("Teachers",productSchema)
 app.post("/products",async(req,res)=>{
 
   try { 
-   const newDBModel=new MyModel({
+   const newDBModel=new MyModel(
+    {
      //get data from req body
     title:req.body.title,
     price:req.body.price,
-    description:req.body.description
-   })
+    description:req.body.description,
+    rating:req.body.rating
+      }
+   )
 
    const productData=await newDBModel.save()
    req.status(201).send(productData)
   }
    catch (error) {
-    res.status(500).send({message:error.message})
+    res.status(500).send(
+      {
+        message:error.message
+        } 
+      )
   }
-})
+    }
+)
+
+
+
+
+
+// Query and Projection Operators  Comparison
+//  For comparison of different BSON type values, see the specified BSON comparison order.
+
+//query mathod --https://www.mongodb.com/docs/manual/reference/operator/query/
+
 
 
 
@@ -89,18 +111,56 @@ app.post("/products",async(req,res)=>{
 
 app.get("/products",async(req,res)=>{
   try {
-   const findAllData=await MyModel.find().limit(2) // limit method for how many item i want to find //limit is optional
+    const price=req.query.price
+    const rating=req.query.rating
+   const findAllData=await MyModel.find(
+    {
+      $nor:[
+        {
+          price:{
+            $eq:price
+          }
+        },
+        {
+          rating:{
+            $eq:rating
+          }
+        }
+      ]
+    }
+    ).limit(5).sort({price:1}).select({price:1,_id:0,rating:1,title:1})
+   
+   //query mathod --https://www.mongodb.com/docs/manual/reference/operator/query/
+   // limit method for how many item i want to find 
+   //limit is optional
    // Find method throw us a array
+   //Query and Projection Operators  Comparison and logical
+   // Select method for selecting spesifiq data item. 
+    // countDocuments() for count the data
+
    if(findAllData){
-    res.status(200).send(findAllData)
+    res.status(200).send({
+      success:true,
+      message:"Find one data successfull",
+      data:findAllData
+    })
    }
    else{
-  res.status(404).send({message:"Data not found"})
+  res.status(404).send(
+    {
+      message:"Data not found"
+    }
+    )
    }
   } catch (error) {
-    res.status(500).send({message:error.message})
+    res.status(500).send(
+      {
+        message:error.message
+      }
+      )
   }
-})
+}
+)
 
 // Get:/products:ID =>> Find a specific porducts
 
@@ -119,21 +179,19 @@ app.get("/products/:id",async(req,res)=>{
    else{
   res.status(404).send({
     message:"Data not found"
-   })
+      }
+    )
    }
   } catch (error) {
     res.status(500).send({message:error.message})
   }
 })
 
-
 // put:/products:ID =>> Update a porducts
 // put:/products:ID =>> Delete a porducts
 
 
-
-
-var port=3025
+var port=3046
 app.listen(port,async()=>{
     console.log("Server run success on port number "+ port);
     // for Technic two
