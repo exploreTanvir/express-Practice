@@ -11,93 +11,6 @@ app.get("/",(req,res)=>{
   res.send("Welcome to the server")
 })
 
-//Technic one  use then,catch for connect with database
-
-// mongoose.connect('mongodb://127.0.0.1:27017/Schools')
-// .then(()=>console.log("db is connected"))
-// .catch((error)=>{
-//     console.log("db is not connected")
-//     console.log(error)
-//     process.exit(1)
-// })
-
-//Technic Two us async,await for connect with database
-
-const ConnectDB=async()=>{
-  try {
-    await mongoose.connect('mongodb://127.0.0.1:27017/Schools')
-    console.log("db is connected")
-  } catch (error) {
-    console.log("db is not connected")
-    console.log(error.message)
-    process.exit(1)
-
-  }
-}
-
-
-//Create product Schema
-
-const productSchema= new mongoose.Schema({
-  title:{
-          type:String,
-          required:true
-        },
-  price:{
-    type:Number,
-    required:true
-  },
-  description:{
-    type:String,
-    required:true
-  },
-  date:{
-    type:Date,
-    default:Date.now
-  },
-  rating:{
-    type:Number,
-    required:true
-  }
-})
-
-
-//Create product Model
-const MyModel=mongoose.model("Teachers",productSchema)
-
-
-// Insert data in Database
-// Post:/products =>> Create a  porducts
-
-app.post("/products",async(req,res)=>{
-
-  try { 
-   const newDBModel=new MyModel(
-    {
-     //get data from req body
-    title:req.body.title,
-    price:req.body.price,
-    description:req.body.description,
-    rating:req.body.rating
-      }
-   )
-
-   const productData=await newDBModel.save()
-   req.status(201).send(productData)
-  }
-   catch (error) {
-    res.status(500).send(
-      {
-        message:error.message
-        } 
-      )
-  }
-    }
-)
-
-
-
-
 
 // Query and Projection Operators  Comparison
 //  For comparison of different BSON type values, see the specified BSON comparison order.
@@ -187,51 +100,8 @@ app.get("/products/:id",async(req,res)=>{
   }
 })
 
-// put:/products:ID =>> Update a porducts
 
-app.put("/UpdateItem",async(req,res)=>{
-  try {
-    const id=req.params.id
-    const UpdateData=await MyModel.updateOne(
-      {
-        rating:id
-      },
-     {$set: {
-        price:req.body.price,
-        rating:req.body.price
-        
-      }
-  }
-    )
-      if(UpdateData){
-       res.status(201).send(
-        {
-          success:true,
-          message:"Update Data Successful",
-          data:UpdateData
-        }
-       )
-      }
-      else{
-       res.status(404).send(
-        {
-          message:"Find data failed"
-        }
-       )
-      }
-
-  } catch (error) {
-    res.status(404).send({
-      message:"Bal hosse na kn"
-    })
-  }
-})
-
-
-// put:/products:ID =>> Delete a porducts
-
-
-var port=3056
+var port=3055
 app.listen(port,async()=>{
     console.log("Server run success on port number "+ port);
     // for Technic two
