@@ -37,15 +37,22 @@ const ConnectDB=async()=>{
 
 
 //Create product Schema
+//schema validation
 
 const productSchema= new mongoose.Schema({
   title:{
           type:String,
-          required:true
+          required:[true,"Project Title is required"],
+          minlength:[3,"minimum length of the product title should be 3"],   //for string value we use minlength or maxlength
+          maxlength:[10,"maximum length of the product title should be 10"],
+          uppercase:true,
+          trim:true
         },
   price:{
     type:Number,
-    required:true
+    required:true,
+    min:[20,"minimum length of the product title should be 20"],  //for number value we use min or max
+    max:[8000,"aximum length of the product title should be 10"]
   },
   description:{
     type:String,
@@ -165,9 +172,9 @@ app.get("/products",async(req,res)=>{
 // Get:/products:ID =>> Find a specific porducts
 
 app.get("/products/:id",async(req,res)=>{
-  try {
+    try {
     const id=req.params.id
-   const findOneData=await MyModel.findOne({price:id},).select({price:1,title:1,_id:0}) //FindOne method throw us a object
+   const findOneData=await MyModel.findOne({price:id},).select({price:1,title:1,_id:1}) //FindOne method throw us a object
    // select method for find specific product from a object
    if(findOneData){
     res.status(200).send({
@@ -222,7 +229,7 @@ app.put("/UpdateItem",async(req,res)=>{
 
   } catch (error) {
     res.status(404).send({
-      message:"Bal hosse na kn"
+      message:"Update failed"
     })
   }
 })
@@ -230,8 +237,30 @@ app.put("/UpdateItem",async(req,res)=>{
 
 // put:/products:ID =>> Delete a porducts
 
+app.delete("/products/:id",async(req,res)=>{
+  try {
+  const id=req.params.id
+ const findOneData=await MyModel.deleteOne({price:id},)
+ if(findOneData){
+  res.status(200).send({
+    success:true,
+    message:"Find one data successfull",
+    data:findOneData
+  })
+ }
+ else{
+res.status(404).send({
+  message:"Data not found"
+    }
+  )
+ }
+} catch (error) {
+  res.status(500).send({message:error.message})
+}
+})
 
-var port=3056
+
+var port=3073
 app.listen(port,async()=>{
     console.log("Server run success on port number "+ port);
     // for Technic two
