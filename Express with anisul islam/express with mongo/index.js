@@ -3,7 +3,7 @@ const express=require("express")
 const dotenv=require("dotenv").config()
 const mongoose=require("mongoose")
 const { stringify } = require("querystring")
-const app=new express()
+const app=new express() 
 app.use(express.urlencoded({extended:true}))
 app.use(express.json())
 
@@ -17,7 +17,7 @@ const ConnectDB=async()=>{
     console.log(error.message)
     process.exit(1)
   }
-   
+ 
 }
 
 // product Schema
@@ -102,8 +102,78 @@ app.get("/porduct/:price",async(req,res)=>{
 })
 
 
+// Delete document
 
-const PORT=process.env.PORT
+app.delete("/product/:price",async(req,res)=>{
+    try {
+    const id=req.params.price
+   const findOneData=await myModel.findByIdAndDelete({price:id},)
+   if(findOneData){
+    res.status(200).send({
+      success:true,
+      message:"Find one data successfull",
+      data:findOneData
+    })
+   }
+   else{
+  res.status(404).send({
+    message:"Data not found"
+      }
+    )
+   }
+  } catch (error) {
+    res.status(500).send({message:error.message})
+  }
+  })
+
+
+
+
+  // Update Item 
+
+  app.put("/product/:id",async(req,res)=>{
+    try {
+      const id=req.params.id
+      const title=req.body.title
+      const description=req.body.description 
+      const price=req.body.price 
+      const UpdateData=await myModel.updateOne(
+        {
+          _id:id
+        },
+       {$set: {
+         price:req.body.price,       
+         title:req.body.title,       
+         description:req.body.description       
+        }
+    }
+      )
+        if(UpdateData){
+         res.status(201).send(
+          {
+            success:true,
+            message:"Update Data Successful",
+            data:UpdateData
+          }
+         )
+        }
+        else{
+         res.status(404).send(
+          {
+            message:"Find data failed"
+          }
+         )
+        }
+  
+    } catch (error) {
+      res.status(404).send({
+        message:"Update failed"
+      })
+    }
+  }
+  )
+
+PORT=process.env.PORT
 app.listen(PORT,async()=>{
     console.log(`Server is running on the port number ${PORT}`)
     await ConnectDB()
