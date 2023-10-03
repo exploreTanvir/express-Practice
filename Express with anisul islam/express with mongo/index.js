@@ -38,7 +38,7 @@ const schema=mongoose.Schema({
 // product model
 const myModel=mongoose.model("products",schema)
 
-app.get("/porduct",(req,res)=>{
+app.get("/",(req,res)=>{
     res.send("Server is running")
 })
 
@@ -57,6 +57,51 @@ app.post("/porduct",async(req,res)=>{
         res.status(500).send({message:error.message})
     }
 })
+
+
+// find data 
+app.get("/porduct",async(req,res)=>{
+    try {
+        const price=req.query.price
+        const item=await myModel.find({
+            price:{$eq:price}
+        })
+    if(item){
+        res.status(200).json(item)
+    }
+    else{
+        res.status(404).send({
+            message:"Products not found"
+        })
+    }
+    } catch (error) {
+    }
+})
+
+
+// find data with a specific id
+app.get("/porduct/:price",async(req,res)=>{
+    try {
+        const price=req.params.price
+        const item=await myModel.find(
+            {
+                price:price
+            }
+        ).limit(2)
+    if(item){
+        res.status(200).json(item)
+    }
+    else{
+        res.status(404).send({
+            message:"Products not found"
+        })
+    }
+    } catch (error) {
+        res.status(500).json({error})
+    }
+})
+
+
 
 const PORT=process.env.PORT
 app.listen(PORT,async()=>{
