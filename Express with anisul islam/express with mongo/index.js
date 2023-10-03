@@ -20,16 +20,34 @@ const ConnectDB=async()=>{
  
 }
 
-// product Schema
+// product Schema with validation 
 const schema=mongoose.Schema({
     title:{type:String,
-        required:true
+        required:[true,"Title is required"],
+        minlength:[5,"Minimum length of the title should be 5 "],
+        maxlength:[10,"Maximum length of the title should be 20 "],
+        trim:true,
+        enum:{
+            values:["i phone","samsung"],
+            message:"{VALUE} is a enum character"
+        }, //must be title from this two value
+        validate:{
+            validator:(valid)=>{
+                valid.length===10
+            },message:"Not a valid title"
+        }
     },
     price:{type:Number,
-        required:true
+        required:true,
+        min:200,
+        max:2000,
     },
     description:{type:String,
         required:true 
+    },
+    email:{
+        type:String,
+        unique:true
     },
     date:{type:Date,
         default:Date.now()
@@ -50,6 +68,7 @@ app.post("/porduct",async(req,res)=>{
         title:req.body.title,
         price:req.body.price,
         description:req.body.description,
+        email:req.body.email,
        })
        const newData=await newMyModel.save()
         res.status(201).send(newData)
