@@ -36,4 +36,13 @@ const updateUser=(req,res)=>{
     res.status(201).json({message:"this is update",users})
 }
 
-module.exports={getAllUsers,createUser,updateUser}
+
+
+//delete user
+const deleteUser=(req,res)=>{
+   const userId=req.params.id
+   const filteredData= users.filter((user)=>user.id!==userId)
+   res.status(201).json({message:`${userId} data is deleted`,filteredData})
+}
+
+module.exports={getAllUsers,createUser,updateUser,deleteUser}
