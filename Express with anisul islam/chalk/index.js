@@ -1,4 +1,4 @@
-const express=require("express")
+oconst express=require("express")
 const chalk=require("chalk")
 const app=express()
 
@@ -10,7 +10,7 @@ console.log(error('Error!'));
 console.log(warning('Warning!'));
 
 app.get("/user",(req,res)=>{
-    res.send("this is user page")
+    res.send("this is users page")
 })
 
 
