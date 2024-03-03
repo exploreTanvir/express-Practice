@@ -8,7 +8,7 @@ app.get("/register",(req,res)=>{
     res.sendFile(__dirname+"/index.html")
 })
 app.post("/register",(req,res)=>{
-    res.send("success")
+    res.send("Success")
 })
 
 app.listen(3000,()=>{
