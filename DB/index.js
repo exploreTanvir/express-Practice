@@ -5,9 +5,7 @@ app.use(express.json())
 
 // create schema
 const ProductSchema=mongoose.Schema({
-    title:{
-        typeof:String,
-    },
+    title:String,
     price:Number,
     rating:Number,
     desc:String,
@@ -18,7 +16,7 @@ const ProductSchema=mongoose.Schema({
 
 
 //model
-const productModel=mongoose.model("teachers",ProductSchema)
+const productModel=mongoose.model("products",ProductSchema)
 
 
 //connect to db
@@ -26,7 +24,7 @@ const productModel=mongoose.model("teachers",ProductSchema)
 const connectDB=async()=>{
  
 try {
-    await  mongoose.connect('mongodb://127.0.0.1:27017/Schools');
+    await  mongoose.connect('mongodb://127.0.0.1:27017/hello');
     console.log("Connected")
 } catch (error) {
     console.log("not connect")
@@ -81,7 +79,7 @@ app.get("/findData",async(req,res)=>{
 
 app.get("/findQData",async(req,res)=>{
     try {
-        const findProduct=await productModel.find({$or:[{price:{$eq:5000}},{$eq:{rating:4}}]})
+        const findProduct=await productModel.find({$or:[{$eq:{rating:4}},{$eq:{price:1000}}]})
         if(findProduct){
             res.send(findProduct)
         }
@@ -101,6 +99,23 @@ app.get("/findData:id",async(req,res)=>{
         const findOneProduct=await productModel.findOne({_id:id})
         res.send(findOneProduct) 
          
+    } catch (error) {
+        res.send("something is wrong")
+    }
+})
+
+
+//Delete data from db
+app.delete("deleteData/:id",async(req,res)=>{
+    try {
+        const id=req.params.id
+        const productDeleteData=await productModel.deleteOne({_id:id})
+        if(productDeleteData){
+            res.send(productDeleteData)
+        }
+        else{
+            res.send("product not found")
+        }
     } catch (error) {
         res.send("something is wrong")
     }
