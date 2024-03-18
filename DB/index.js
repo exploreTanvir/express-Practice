@@ -38,7 +38,7 @@ try {
 }
 
 app.get("/",(req,res)=>{
-    res.send("hello guys")
+    res.send("Hello guys")
 })
 
 app.post("/uploadData",(req,res)=>{
